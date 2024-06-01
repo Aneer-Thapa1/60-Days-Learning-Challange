@@ -1,0 +1,104 @@
+Steps to Create a Django Project
+1. Install Python and pip
+Python is a programming language. pip is a tool to install Python packages.
+Download Python from python.org.
+Install it and don't forget to check "Add Python to PATH" box.
+Check if Python is installed correctly:
+bash
+Copy code
+python --version
+Check if pip is installed correctly:
+bash
+Copy code
+pip --version
+2. Open Command Prompt (CMD)
+Press Win + R, type cmd, and press Enter.
+3. Navigate to Your Desired Directory
+Use the cd command to go to the folder where you want to create your Django project. For example:
+bash
+Copy code
+cd path\to\your\folder
+4. Create a Virtual Environment (Optional but Recommended)
+Virtual environment le hami lai project dependencies separate garna help garcha.
+
+Create a virtual environment:
+
+bash
+Copy code
+python -m venv myenv
+Replace myenv with the name you want for your virtual environment.
+
+Activate the virtual environment:
+
+On Windows:
+bash
+Copy code
+myenv\Scripts\activate
+On macOS/Linux:
+bash
+Copy code
+source myenv/bin/activate
+5. Install Django
+With the virtual environment activated, install Django using pip:
+bash
+Copy code
+pip install django
+6. Create a New Django Project
+Run this command to create a new Django project:
+bash
+Copy code
+django-admin startproject myproject
+Replace myproject with the name you want for your project.
+7. Go to the Project Directory
+Change to the project directory:
+bash
+Copy code
+cd myproject
+8. Start the Development Server
+Run this command to start the development server:
+
+bash
+Copy code
+python manage.py runserver
+You will see some output showing that the server is running:
+
+sql
+Copy code
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 01, 2024 - 00:00:00
+Django version 4.0, using settings 'myproject.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+Open your web browser and go to http://127.0.0.1:8000/ to see the Django welcome page.
+
+Project Structure
+Your project folder (myproject) will look like this:
+
+markdown
+Copy code
+myproject/
+  ├── myproject/
+  │   ├── __init__.py
+  │   ├── settings.py
+  │   ├── urls.py
+  │   ├── asgi.py
+  │   └── wsgi.py
+  └── manage.py
+myproject/: Contains the project settings and configuration files.
+init.py: An empty file that shows this folder is a Python package.
+settings.py: Configuration settings for the project.
+urls.py: URL declarations for this Django project; a "table of contents" of your site.
+asgi.py: Entry point for ASGI-compatible web servers to serve your project.
+wsgi.py: Entry point for WSGI-compatible web servers to serve your project.
+manage.py: A command-line tool that lets you interact with this Django project.
+Next Steps
+Yaha bata, tapai Django apps, models, views, ra templates setup garna saknu huncha ra aafno project build garna saknu huncha.
+
+
+Tips:
+
+Always activate your virtual environment before working on your project.
+Use pip install to add any other libraries you need for your project.
