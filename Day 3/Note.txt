@@ -1,0 +1,10 @@
+url and path 
+models and views
+how to see page on browser 
+
+
+URL ra path (path) dui lai vyavasayik web design ma mahatwapurna bhumika cha. URL web page ko patama pahunch garn maarg pradan gardach, jabki path web server ko fileharuko sanrachanama maarg pradan gardach. Udaharanakaa lagi, "https://example.com/blog" yas URL ko bhitrako "/blog" path batauncha jun web server ma "blog" namako folderma pugnech.
+
+Models ra views Django web framework ma mahatwapurna classes hun. Models le database sang sambandhit kaam garchhan, jabaki views web page ko dikhaune kaam garchhan. Django ma, views le templates banaune kaam garchhan jasle web page ko content kasaile dekhne batai dinchha.
+
+To see your web page in the browser, you need to run a web server. You can use a development server that comes with Django for testing purposes. To start the development server, navigate to your project directory in the terminal and run the command python manage.py runserver. This will start the server, and you can view your web page by entering http://127.0.0.1:8000/ or http://localhost:8000/ in your browser's address bar.
