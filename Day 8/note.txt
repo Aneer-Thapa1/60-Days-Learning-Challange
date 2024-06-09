@@ -1,0 +1,17 @@
+What is Middleware?
+Middleware in Django is a way to process requests globally before they reach the view or after the view has processed them. Middleware is a lightweight, low-level plugin system for globally altering Django’s input or output.
+
+How Middleware Works
+Request Phase: When a request comes in, it goes through the middleware stack in the order defined in your settings.py file. Each middleware can alter the request or halt it before reaching the view.
+Response Phase: After the view processes the request and returns a response, it goes back through the middleware stack in reverse order. Each middleware can alter the response or halt it before it reaches the client.
+Common Uses of Middleware
+Authentication: Ensuring user credentials are valid.
+Session Management: Managing user sessions.
+Caching: Storing parts of the response to speed up subsequent requests.
+CSRF Protection: Protecting against Cross-Site Request Forgery attacks.
+Logging: Logging requests and responses for monitoring.
+Creating Custom Middleware
+To create custom middleware, define a class with at least one of the following methods:
+
+__init__(self, get_response): Called once when the web server starts.
+__call__(self, request): Called on each request.
