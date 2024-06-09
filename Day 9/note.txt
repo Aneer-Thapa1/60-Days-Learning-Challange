@@ -1,0 +1,130 @@
+What is Django Rest Framework?
+Django Rest Framework (DRF) is a powerful and flexible toolkit for building Web APIs. It provides features such as serialization, authentication, and viewsets to easily build and manage APIs.
+
+Key Concepts
+Serializers: Convert complex data types like querysets and model instances to native Python datatypes that can be rendered into JSON, XML, or other content types.
+ViewSets: Simplify the creation of views by combining the logic for a set of related views in a single class.
+Routers: Automatically generate URL patterns for ViewSets.
+Authentication: Built-in mechanisms for authentication, including token-based authentication.
+
+
+Setting Up DRF
+Install Django Rest Framework:
+
+sh
+Copy code
+pip install djangorestframework
+Add DRF to INSTALLED_APPS:
+
+python
+Copy code
+# settings.py
+INSTALLED_APPS = [
+    ...
+    'rest_framework',
+]
+
+Creating a Simple API
+
+Create a Serializer:
+
+Define a serializer for your model.
+python
+Copy code
+# serializers.py
+from rest_framework import serializers
+from .models import Contact
+
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = ['id', 'name', 'email', 'message', 'created_at']
+Create a ViewSet:
+
+Define a ViewSet for your model.
+python
+Copy code
+# views.py
+from rest_framework import viewsets
+from .models import Contact
+from .serializers import ContactSerializer
+
+class ContactViewSet(viewsets.ModelViewSet):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+Set Up URLs with Routers:
+
+Use a router to automatically generate URLs for the ViewSet.
+python
+Copy code
+# urls.py
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ContactViewSet
+
+router = DefaultRouter()
+router.register(r'contacts', ContactViewSet)
+
+urlpatterns = [
+    path('', include(router.urls)),
+]
+Access the API:
+
+Run the Django development server and navigate to http://127.0.0.1:8000/contacts/ to interact with the API.
+Advanced Features
+Authentication:
+
+DRF supports various authentication schemes. For example, token-based authentication:
+
+sh
+Copy code
+pip install djangorestframework-simplejwt
+Add rest_framework_simplejwt to INSTALLED_APPS:
+
+python
+Copy code
+INSTALLED_APPS = [
+    ...
+    'rest_framework',
+    'rest_framework_simplejwt',
+]
+Configure authentication classes:
+
+python
+Copy code
+# settings.py
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+Update URLs to include authentication endpoints:
+
+python
+Copy code
+# urls.py
+from django.urls import path, include
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+urlpatterns = [
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('', include(router.urls)),
+]
+Permissions:
+
+You can set permissions to control access to your API.
+python
+Copy code
+# views.py
+from rest_framework import viewsets, permissions
+from .models import Contact
+from .serializers import ContactSerializer
+
+class ContactViewSet(viewsets.ModelViewSet):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+    permission_classes = [permissions.IsAuthenticated]
