@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motivational Task Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+            --card-color: #ffffff;
+            --todo-color: #ff7675;
+            --progress-color: #fdcb6e;
+            --done-color: #55efc4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 36px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .board {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .column {
+            flex: 0 0 300px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .column h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        #todo h2 {
+            background-color: var(--todo-color);
+        }
+
+        #inProgress h2 {
+            background-color: var(--progress-color);
+        }
+
+        #done h2 {
+            background-color: var(--done-color);
+        }
+
+        .task {
+            background-color: var(--card-color);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: move;
+            transition: all 0.3s ease;
+        }
+
+        .task:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .task h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .task p {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .task-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .task-actions button {
+            background-color: #3498db;
+            border: none;
+            border-radius: 3px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 5px;
+            padding: 5px 10px;
+            transition: background-color 0.2s ease;
+        }
+
+        .task-actions button:hover {
+            background-color: #2980b9;
+        }
+
+        .add-task {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            text-align: center;
+            transition: background-color 0.2s ease;
+            font-size: 16px;
+        }
+
+        .add-task:hover {
+            background-color: #2980b9;
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
+
+        .drag-over {
+            border: 2px dashed #3498db;
+        }
+
+        .motivational-quote {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 18px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Motivational Task Dashboard</h1>
+        <p class="motivational-quote">"The secret of getting ahead is getting started." - Mark Twain</p>
+        <div class="board">
+            <div class="column" id="todo">
+                <h2>To Do</h2>
+                <div class="tasks-container"></div>
+                <button class="add-task">+ Add a task</button>
+            </div>
+            <div class="column" id="inProgress">
+                <h2>In Progress</h2>
+                <div class="tasks-container"></div>
+                <button class="add-task">+ Add a task</button>
+            </div>
+            <div class="column" id="done">
+                <h2>Done</h2>
+                <div class="tasks-container"></div>
+                <button class="add-task">+ Add a task</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const columns = document.querySelectorAll('.column');
+            const addTaskButtons = document.querySelectorAll('.add-task');
+
+            function createTask(title, description) {
+                const task = document.createElement('div');
+                task.classList.add('task');
+                task.setAttribute('draggable', 'true');
+                task.innerHTML = `
+                    <h3>${title}</h3>
+                    <p>${description}</p>
+                    <div class="task-actions">
+                        <button class="edit-task">Edit</button>
+                        <button class="delete-task">Delete</button>
+                    </div>
+                `;
+
+                task.addEventListener('dragstart', dragStart);
+                task.addEventListener('dragend', dragEnd);
+
+                const editButton = task.querySelector('.edit-task');
+                const deleteButton = task.querySelector('.delete-task');
+
+                editButton.addEventListener('click', () => editTask(task));
+                deleteButton.addEventListener('click', () => deleteTask(task));
+
+                return task;
+            }
+
+            function editTask(task) {
+                const title = prompt('Edit task title:', task.querySelector('h3').textContent);
+                const description = prompt('Edit task description:', task.querySelector('p').textContent);
+                if (title && description) {
+                    task.querySelector('h3').textContent = title;
+                    task.querySelector('p').textContent = description;
+                }
+            }
+
+            function deleteTask(task) {
+                if (confirm('Are you sure you want to delete this task?')) {
+                    task.remove();
+                }
+            }
+
+            function dragStart() {
+                this.classList.add('dragging');
+            }
+
+            function dragEnd() {
+                this.classList.remove('dragging');
+            }
+
+            function dragOver(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            }
+
+            function dragEnter(e) {
+                e.preventDefault();
+            }
+
+            function dragLeave() {
+                this.classList.remove('drag-over');
+            }
+
+            function drop() {
+                this.classList.remove('drag-over');
+                const task = document.querySelector('.dragging');
+                const tasksContainer = this.querySelector('.tasks-container');
+                tasksContainer.appendChild(task);
+            }
+
+            columns.forEach(column => {
+                column.addEventListener('dragover', dragOver);
+                column.addEventListener('dragenter', dragEnter);
+                column.addEventListener('dragleave', dragLeave);
+                column.addEventListener('drop', drop);
+            });
+
+            function addNewTask(column) {
+                const taskTitle = prompt('Enter task title:');
+                const taskDescription = prompt('Enter task description:');
+
+                if (taskTitle && taskDescription) {
+                    const newTask = createTask(taskTitle, taskDescription);
+                    const tasksContainer = column.querySelector('.tasks-container');
+                    tasksContainer.appendChild(newTask);
+                }
+            }
+
+            addTaskButtons.forEach(button => {
+                button.addEventListener('click', () => addNewTask(button.closest('.column')));
+            });
+
+            // Initial tasks
+            const todoTasks = [
+                { title: 'Brainstorm project ideas', description: 'Think of innovative solutions for current challenges' },
+                { title: 'Learn a new skill', description: 'Dedicate time to expand your knowledge' }
+            ];
+
+            const inProgressTasks = [
+                { title: 'Develop MVP', description: 'Create a minimum viable product for the main idea' }
+            ];
+
+            const doneTasks = [
+                { title: 'Complete project planning', description: 'Outline project scope, timeline, and resources' }
+            ];
+
+            function initializeTasks(columnId, tasks) {
+                const column = document.getElementById(columnId);
+                const tasksContainer = column.querySelector('.tasks-container');
+                tasks.forEach(task => {
+                    const newTask = createTask(task.title, task.description);
+                    tasksContainer.appendChild(newTask);
+                });
+            }
+
+            initializeTasks('todo', todoTasks);
+            initializeTasks('inProgress', inProgressTasks);
+            initializeTasks('done', doneTasks);
+        });
+    </script>
+</body>
+
+</html>
