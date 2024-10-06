@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Clock and Time Zone Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3a0ca3;
+            --secondary-color: #f72585;
+            --background-color: #16213e;
+            --text-color: #e0e1dd;
+            --card-color: #1a1a2e;
+            --accent-color: #4cc9f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(58, 12, 163, 0.4) 0%, rgba(58, 12, 163, 0) 40%),
+                radial-gradient(circle at 90% 80%, rgba(76, 201, 240, 0.3) 0%, rgba(76, 201, 240, 0) 40%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 40px;
+            font-size: 2.8em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .world-clock {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .clock-card {
+            background-color: var(--card-color);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clock-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            transform: rotate(45deg);
+            z-index: 1;
+        }
+
+        .clock-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .clock-card h2 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            position: relative;
+            z-index: 2;
+        }
+
+        .clock-card .time {
+            font-size: 2.5em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            position: relative;
+            z-index: 2;
+        }
+
+        .clock-card .date {
+            color: var(--text-color);
+            font-size: 1.1em;
+            position: relative;
+            z-index: 2;
+        }
+
+        .clock-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .timezone-info {
+            background-color: var(--card-color);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .timezone-info h2 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .timezone-info p {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .add-clock {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-clock::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.3),
+                    transparent);
+            transition: all 0.6s;
+        }
+
+        .add-clock:hover::before {
+            left: 100%;
+        }
+
+        .add-clock:hover {
+            background-color: #d90368;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--card-color);
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s;
+            position: relative;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: var(--text-color);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: var(--secondary-color);
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #444;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .modal input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
+        }
+
+        .modal button {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .modal button:hover {
+            background-color: #d90368;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #444;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 0 0 10px 10px;
+            background-color: var(--background-color);
+        }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: var(--card-color);
+            border-bottom: 1px solid #444;
+            color: var(--text-color);
+        }
+
+        .autocomplete-items div:hover {
+            background-color: #2a2a4e;
+        }
+
+        .autocomplete-active {
+            background-color: var(--accent-color) !important;
+            color: var(--card-color) !important;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .emoji-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .emoji-option {
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .emoji-option:hover {
+            transform: scale(1.2);
+        }
+
+        .selected-emoji {
+            background-color: var(--accent-color);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🌍 World Clock Explorer</h1>
+        <div class="world-clock" id="worldClock"></div>
+        <div class="timezone-info" id="timezoneInfo">
+            <h2>Time Zone Information</h2>
+            <p>Select a clock to view detailed time zone information.</p>
+        </div>
+        <button class="add-clock" id="addClock">🕰️ Add New Clock</button>
+    </div>
+
+    <div id="addClockModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Clock</h2>
+            <input type="text" id="cityInput" placeholder="Enter city name">
+            <div class="autocomplete">
+                <input type="text" id="timezoneInput" placeholder="Enter time zone">
+            </div>
+            <div class="emoji-selector" id="emojiSelector"></div>
+            <button id="submitNewClock">Add Clock</button>
+        </div>
+    </div>
+
+    <script>
+        const worldClock = document.getElementById('worldClock');
+        const timezoneInfo = document.getElementById('timezoneInfo');
+        const addClockButton = document.getElementById('addClock');
+        const modal = document.getElementById('addClockModal');
+        const closeModal = document.getElementsByClassName('close')[0];
+        const submitNewClock = document.getElementById('submitNewClock');
+
+        let cities = [
+            { name: 'New York', timezone: 'America/New_York', icon: '🗽' },
+            { name: 'London', timezone: 'Europe/London', icon: '🇬🇧' },
+            { name: 'Tokyo', timezone: 'Asia/Tokyo', icon: '🗼' },
+            { name: 'Sydney', timezone: 'Australia/Sydney', icon: '🦘' },
+            { name: 'Kathmandu', timezone: 'Asia/Kathmandu', icon: '🏔️' }
+        ];
+
+        const emojiOptions = ['🏙️', '🌆', '🌇', '🌃', '🌉', '🏛️', '🏰', '🕌', '🛕', '⛩️'];
+        let selectedEmoji = '🏙️';
+
+        function createClockCard(city) {
+            const card = document.createElement('div');
+            card.className = 'clock-card';
+            card.innerHTML = `
+                <div class="clock-icon">${city.icon}</div>
+                <h2>${city.name}</h2>
+                <div class="time"></div>
+                <div class="date"></div>
+            `;
+            card.addEventListener('click', () => showTimezoneInfo(city));
+            return card;
+        }
+
+        function updateClock(card, timezone) {
+            const timeElement = card.querySelector('.time');
+            const dateElement = card.querySelector('.date');
+
+            function update() {
+                const now = new Date().toLocaleString('en-US', { timeZone: timezone });
+                const [date, time] = now.split(', ');
+                if (timeElement.textContent !== time) {
+                    timeElement.textContent = time;
+                    timeElement.classList.add('pulse');
+                    setTimeout(() => timeElement.classList.remove('pulse'), 2000);
+                }
+                dateElement.textContent = date;
+            }
+
+            update();
+            setInterval(update, 1000);
+        }
+
+        function showTimezoneInfo(city) {
+            const now = new Date().toLocaleString('en-US', { timeZone: city.timezone });
+            const options = { timeZoneName: 'long' };
+            const timeZoneName = new Intl.DateTimeFormat('en-US', options).formatToParts(new Date())
+                .find(part => part.type === 'timeZoneName').value;
+
+            timezoneInfo.innerHTML = `
+                <h2>${city.icon} ${city.name} Time Zone Information</h2>
+                <p><strong>Time Zone:</strong> ${timeZoneName}</p>
+                <p><strong>Current Local Time:</strong> ${now}</p>
+                <p><strong>UTC Offset:</strong> ${getUTCOffset(city.timezone)}</p>
+                <p><strong>Daylight Saving Time:</strong> ${isDST(city.timezone) ? 'Yes' : 'No'}</p>
+            `;
+        }
+
+        function getUTCOffset(timezone) {
+            const date = new Date().toLocaleString('en-US', { timeZone: timezone });
+            const utcDate = new Date().toLocaleString('en-US', { timeZone: 'UTC' });
+            const diff = new Date(date) - new Date(utcDate);
+            const hours = Math.floor(Math.abs(diff) / 3600000);
+            const minutes = Math.floor((Math.abs(diff) % 3600000) / 60000);
+            return `${diff >= 0 ? '+' : '-'}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        function isDST(timezone) {
+            const january = new Date(new Date().getFullYear(), 0, 1).toLocaleString('en-US', { timeZone: timezone });
+            const july = new Date(new Date().getFullYear(), 6, 1).toLocaleString('en-US', { timeZone: timezone });
+            return new Date(january).getTimezoneOffset() !== new Date(july).getTimezoneOffset();
+        }
+
+        function createEmojiSelector() {
+            const emojiSelector = document.getElementById('emojiSelector');
+            emojiOptions.forEach(emoji => {
+                const emojiElement = document.createElement('span');
+                emojiElement.textContent = emoji;
+                emojiElement.classList.add('emoji-option');
+                emojiElement.onclick = () => selectEmoji(emoji, emojiElement);
+                emojiSelector.appendChild(emojiElement);
+            });
+            // Select the first emoji by default
+            selectEmoji(emojiOptions[0], emojiSelector.children[0]);
+        }
+
+        function selectEmoji(emoji, element) {
+            selectedEmoji = emoji;
+            document.querySelectorAll('.emoji-option').forEach(el => el.classList.remove('selected-emoji'));
+            element.classList.add('selected-emoji');
+        }
+
+        function addNewClock() {
+            const cityName = document.getElementById('cityInput').value;
+            const timezone = document.getElementById('timezoneInput').value;
+            if (cityName && timezone) {
+                const newCity = { name: cityName, timezone: timezone, icon: selectedEmoji };
+                cities.push(newCity);
+                const card = createClockCard(newCity);
+                worldClock.appendChild(card);
+                updateClock(card, timezone);
+                modal.style.display = "none";
+                document.getElementById('cityInput').value = '';
+                document.getElementById('timezoneInput').value = '';
+                // Reset selected emoji
+                selectEmoji(emojiOptions[0], document.querySelector('.emoji-option'));
+                saveCitiesToLocalStorage();
+            }
+        }
+
+        function renderClocks() {
+            worldClock.innerHTML = '';
+            cities.forEach(city => {
+                const card = createClockCard(city);
+                worldClock.appendChild(card);
+                updateClock(card, city.timezone);
+            });
+        }
+
+        function saveCitiesToLocalStorage() {
+            localStorage.setItem('worldClockCities', JSON.stringify(cities));
+        }
+
+        function loadCitiesFromLocalStorage() {
+            const storedCities = localStorage.getItem('worldClockCities');
+            if (storedCities) {
+                cities = JSON.parse(storedCities);
+            }
+        }
+
+        addClockButton.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        closeModal.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        submitNewClock.onclick = addNewClock;
+
+        // Time zone list (this is a subset, you may want to include a more comprehensive list)
+        const timezones = [
+            "Africa/Cairo", "Africa/Johannesburg", "Africa/Lagos",
+            "America/Chicago", "America/Los_Angeles", "America/Mexico_City", "America/New_York", "America/Sao_Paulo",
+            "Asia/Dubai", "Asia/Hong_Kong", "Asia/Tokyo", "Asia/Seoul", "Asia/Shanghai", "Asia/Singapore", "Asia/Kathmandu",
+            "Australia/Sydney", "Europe/London", "Europe/Moscow", "Europe/Paris", "Pacific/Auckland"
+        ];
+
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function (e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                        b.addEventListener("click", function (e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+            inp.addEventListener("keydown", function (e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                    currentFocus++;
+                    addActive(x);
+                } else if (e.keyCode == 38) {
+                    currentFocus--;
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+            function addActive(x) {
+                if (!x) return false;
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+
+        // Initialize the application
+        loadCitiesFromLocalStorage();
+        renderClocks();
+        createEmojiSelector();
+        autocomplete(document.getElementById("timezoneInput"), timezones);
+    </script>
+</body>
+
+</html>
