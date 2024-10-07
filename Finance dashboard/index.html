@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Pomodoro Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #e74c3c;
+            --background-color: #ecf0f1;
+            --text-color: #2c3e50;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        h1,
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        #tasks {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #tasks li {
+            background: var(--background-color);
+            margin: 12px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+
+        #tasks li:hover {
+            transform: translateX(5px);
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: var(--secondary-color);
+        }
+
+        #timer-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 2rem auto;
+        }
+
+        #timer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--accent-color);
+            z-index: 10;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        #timer-info {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 1.2em;
+        }
+
+        #timer-controls,
+        #timer-settings {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        #timer-controls button,
+        #timer-settings select {
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .task-actions button {
+            padding: 5px 10px;
+            font-size: 0.8em;
+        }
+
+        .priority-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .priority-low {
+            background-color: #2ecc71;
+        }
+
+        .priority-medium {
+            background-color: #f39c12;
+        }
+
+        .priority-high {
+            background-color: #e74c3c;
+        }
+
+        #stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Task Manager</h1>
+            <div id="task-form">
+                <input type="text" id="task-input" placeholder="Enter task">
+                <select id="task-priority">
+                    <option value="low">Low Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="high">High Priority</option>
+                </select>
+                <button onclick="addTask()">Add Task</button>
+            </div>
+            <ul id="tasks"></ul>
+        </div>
+        <div class="card">
+            <h1>Pomodoro Timer</h1>
+            <div id="timer-container">
+                <svg class="progress-ring" width="300" height="300">
+                    <circle id="progress-ring-bg" cx="150" cy="150" r="140" fill="transparent" stroke="#ddd"
+                        stroke-width="10" />
+                    <circle id="progress" cx="150" cy="150" r="140" fill="transparent" stroke="var(--accent-color)"
+                        stroke-width="10" stroke-dasharray="879.65" stroke-dashoffset="879.65" />
+                </svg>
+                <div id="timer">25:00</div>
+            </div>
+            <div id="timer-info">
+                Current Session: <span id="session-type">Work</span><br>
+                Next: <span id="next-session">5 min break</span>
+            </div>
+            <div id="timer-settings">
+                <select id="timer-duration">
+                    <option value="1500">25 minutes</option>
+                    <option value="1800">30 minutes</option>
+                    <option value="2700">45 minutes</option>
+                    <option value="3600">60 minutes</option>
+                </select>
+                <select id="break-duration">
+                    <option value="300">5 minutes</option>
+                    <option value="600">10 minutes</option>
+                    <option value="900">15 minutes</option>
+                </select>
+            </div>
+            <div id="timer-controls">
+                <button onclick="startTimer()">Start</button>
+                <button onclick="pauseTimer()">Pause</button>
+                <button onclick="resetTimer()">Reset</button>
+            </div>
+            <div id="stats">
+                <div class="stat-card">
+                    <div>Completed Pomodoros</div>
+                    <div class="stat-value" id="completed-pomodoros">0</div>
+                </div>
+                <div class="stat-card">
+                    <div>Completed Tasks</div>
+                    <div class="stat-value" id="completed-tasks">0</div>
+                </div>
+                <div class="stat-card">
+                    <div>Total Focus Time</div>
+                    <div class="stat-value" id="total-focus-time">0 min</div>
+                </div>
+                <div class="stat-card">
+                    <div>Current Streak</div>
+                    <div class="stat-value" id="current-streak">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let timer;
+        let timeLeft = 1500; // 25 minutes in seconds
+        let totalTime = 1500;
+        let isRunning = false;
+        let isBreak = false;
+        let completedPomodoros = 0;
+        let completedTasks = 0;
+        let totalFocusTime = 0;
+        let currentStreak = 0;
+
+        function renderTasks() {
+            const taskList = document.getElementById('tasks');
+            taskList.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>
+                        <span class="priority-indicator priority-${task.priority}"></span>
+                        <span class="${task.completed ? 'completed' : ''}">${task.text}</span>
+                    </span>
+                    <div class="task-actions">
+                        <button onclick="toggleTask(${index})">${task.completed ? 'Undo' : 'Complete'}</button>
+                        <button onclick="deleteTask(${index})">Delete</button>
+                    </div>
+                `;
+                taskList.appendChild(li);
+            });
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            updateStats();
+        }
+
+        function addTask() {
+            const taskInput = document.getElementById('task-input');
+            const taskPriority = document.getElementById('task-priority');
+            const text = taskInput.value.trim();
+            if (text) {
+                tasks.push({ text, completed: false, priority: taskPriority.value });
+                taskInput.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            if (tasks[index].completed) {
+                completedTasks++;
+            } else {
+                completedTasks = Math.max(0, completedTasks - 1);
+            }
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            if (tasks[index].completed) {
+                completedTasks = Math.max(0, completedTasks - 1);
+            }
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timer = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    if (timeLeft === 0) {
+                        clearInterval(timer);
+                        isRunning = false;
+                        if (isBreak) {
+                            alert('Break time is over! Ready to work?');
+                            isBreak = false;
+                            resetTimer();
+                        } else {
+                            alert('Pomodoro session completed! Time for a break.');
+                            completedPomodoros++;
+                            totalFocusTime += totalTime / 60;
+                            currentStreak++;
+                            isBreak = true;
+                            timeLeft = parseInt(document.getElementById('break-duration').value);
+                            totalTime = timeLeft;
+                        }
+                        updateTimerDisplay();
+                        updateStats();
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timer);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            isRunning = false;
+            isBreak = false;
+            timeLeft = parseInt(document.getElementById('timer-duration').value);
+            totalTime = timeLeft;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            const progressRing = document.getElementById('progress');
+            const radius = progressRing.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            const offset = circumference - (timeLeft / totalTime * circumference);
+            progressRing.style.strokeDashoffset = offset;
+
+            document.getElementById('session-type').textContent = isBreak ? 'Break' : 'Work';
+            document.getElementById('next-session').textContent = isBreak ?
+                `${document.getElementById('timer-duration').value / 60} min work` :
+                `${document.getElementById('break-duration').value / 60} min break`;
+        }
+
+        function updateStats() {
+            document.getElementById('completed-pomodoros').textContent = completedPomodoros;
+            document.getElementById('completed-tasks').textContent = completedTasks;
+            document.getElementById('total-focus-time').textContent = `${totalFocusTime} min`;
+            document.getElementById('current-streak').textContent = currentStreak;
+        }
+
+        document.getElementById('timer-duration').addEventListener('change', resetTimer);
+        document.getElementById('break-duration').addEventListener('change', () => {
+            if (isBreak) {
+                resetTimer();
+            }
+        });
+
+        // Initial render
+        renderTasks();
+        resetTimer();
+        updateStats();
+    </script>
+</body>
+
+</html>
