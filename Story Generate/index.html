@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enchanted Realms: A Magical Journey</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lobster&family=Roboto:wght@300;400;700&display=swap');
+
+        :root {
+            --primary-color: #4a0e4e;
+            --secondary-color: #89609e;
+            --accent-color: #c2afd4;
+            --background-color: #f4e9f7;
+            --text-color: #2a0e2e;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23c2afd4' fill-opacity='0.4'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            font-family: 'Lobster', cursive;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #story-display {
+            background-color: var(--accent-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 150px;
+            font-size: 1.1em;
+            line-height: 1.8;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--secondary-color);
+        }
+
+        #choices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #reset {
+            background-color: #e74c3c;
+            margin-top: 20px;
+        }
+
+        #reset:hover {
+            background-color: #c0392b;
+        }
+
+        #story-tree {
+            margin-top: 30px;
+            border-top: 2px solid var(--accent-color);
+            padding-top: 20px;
+        }
+
+        .story-node {
+            margin-left: 20px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .story-node::before {
+            content: "•";
+            color: var(--secondary-color);
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+            position: absolute;
+            left: -10px;
+            top: 0;
+        }
+
+        #character-stats {
+            background-color: var(--accent-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+            margin: 5px;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.2em;
+        }
+
+        #inventory {
+            background-color: var(--accent-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        #inventory h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        #inventory-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #inventory-list li {
+            background-color: rgba(255, 255, 255, 0.5);
+            margin: 5px 0;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            #choices {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Enchanted Realms: A Magical Journey</h1>
+        <div id="character-stats">
+            <div class="stat">
+                <div>Health</div>
+                <div class="stat-value" id="health-stat">100</div>
+            </div>
+            <div class="stat">
+                <div>Magic</div>
+                <div class="stat-value" id="magic-stat">50</div>
+            </div>
+            <div class="stat">
+                <div>Gold</div>
+                <div class="stat-value" id="gold-stat">0</div>
+            </div>
+            <div class="stat">
+                <div>Experience</div>
+                <div class="stat-value" id="exp-stat">0</div>
+            </div>
+        </div>
+        <div id="story-display"></div>
+        <div id="choices"></div>
+        <button id="reset" onclick="resetStory()">Start New Adventure</button>
+        <div id="inventory">
+            <h3>Inventory</h3>
+            <ul id="inventory-list"></ul>
+        </div>
+        <div id="story-tree">
+            <h2>Your Journey So Far</h2>
+            <div id="tree-display"></div>
+        </div>
+    </div>
+
+
+
+    <script>
+        const storyData = {
+            // Previous nodes remain unchanged
+
+            herb_gathering: {
+                text: "You discover a patch of rare, glowing herbs. As you gather them, you feel their magical essence enhancing your powers.",
+                choices: [
+                    { text: "Craft a healing potion", nextNode: "healing_brew", effect: { health: 30 } },
+                    { text: "Create a magical charm", nextNode: "protection_charm", effect: { magic: 20 } },
+                    { text: "Study the herbs to learn their properties", nextNode: "herb_lore", effect: { exp: 25 } }
+                ]
+            },
+            tree_hollow: {
+                text: "Inside the hollow tree, you find a hidden portal swirling with magical energy.",
+                choices: [
+                    { text: "Step through the portal", nextNode: "portal_journey" },
+                    { text: "Examine the portal from a safe distance", nextNode: "portal_study", effect: { exp: 20 } },
+                    { text: "Try to close the portal", nextNode: "portal_closure", effect: { magic: 30 } }
+                ]
+            },
+            spirit_alliance: {
+                text: "The forest spirits accept your token and form an alliance with you. You feel a surge of magical energy.",
+                choices: [
+                    { text: "Ask them to teach you forest magic", nextNode: "forest_magic", effect: { magic: 40, exp: 30 } },
+                    { text: "Request a spirit guide", nextNode: "spirit_companion", effect: { health: 20, magic: 20 } },
+                    { text: "Thank them and continue your journey", nextNode: "deep_woods" }
+                ]
+            },
+            forest_secrets: {
+                text: "The spirits reveal ancient secrets about the forest. You learn of hidden paths and magical creatures.",
+                choices: [
+                    { text: "Explore a hidden path", nextNode: "secret_glade" },
+                    { text: "Seek out a magical creature", nextNode: "creature_encounter" },
+                    { text: "Use the knowledge to navigate deeper into the forest", nextNode: "forest_heart" }
+                ]
+            },
+            spirit_guardian: {
+                text: "The spirits grant you their protection. You feel safer and more connected to the forest.",
+                choices: [
+                    { text: "Explore with your new confidence", nextNode: "bold_exploration" },
+                    { text: "Rest and recover", nextNode: "forest_rest", effect: { health: 40 } },
+                    { text: "Ask the spirits about nearby dangers", nextNode: "danger_warning" }
+                ]
+            },
+            campfire_tales: {
+                text: "As you tell stories around the campfire, you attract the attention of some friendly woodland creatures.",
+                choices: [
+                    { text: "Share food with the creatures", nextNode: "animal_friends", effect: { exp: 20 } },
+                    { text: "Learn about the forest from the creatures", nextNode: "forest_lore", effect: { exp: 30 } },
+                    { text: "Bid the creatures goodnight and sleep", nextNode: "restful_sleep", effect: { health: 20 } }
+                ]
+            },
+            night_ward: {
+                text: "Your protection ritual creates a safe haven in the clearing. The night passes peacefully.",
+                choices: [
+                    { text: "Continue your journey at dawn", nextNode: "morning_path" },
+                    { text: "Explore the nearby area", nextNode: "dawn_exploration" },
+                    { text: "Reinforce the ward and stay longer", nextNode: "extended_rest", effect: { magic: 30, health: 30 } }
+                ]
+            },
+            night_encounter: {
+                text: "During your watch, you encounter a mysterious nocturnal creature. It seems both dangerous and magical.",
+                choices: [
+                    { text: "Attempt to communicate", nextNode: "creature_dialogue" },
+                    { text: "Observe from a safe distance", nextNode: "creature_study", effect: { exp: 25 } },
+                    { text: "Prepare for a potential fight", nextNode: "night_battle" }
+                ]
+            },
+            portal_journey: {
+                text: "You step through the portal and find yourself in a new, mysterious location filled with floating islands and cascading waterfalls.",
+                choices: [
+                    { text: "Explore the floating islands", nextNode: "sky_islands" },
+                    { text: "Investigate the waterfalls", nextNode: "magic_falls" },
+                    { text: "Look for a way back", nextNode: "return_portal" }
+                ]
+            },
+            portal_study: {
+                text: "As you study the portal, you gain insights into its magical nature and how it might be used or controlled.",
+                choices: [
+                    { text: "Use your knowledge to stabilize the portal", nextNode: "stable_portal", effect: { magic: 35, exp: 30 } },
+                    { text: "Record your findings for future reference", nextNode: "magic_notes", effect: { exp: 40 } },
+                    { text: "Attempt to redirect the portal", nextNode: "portal_redirect", effect: { magic: 50 } }
+                ]
+            },
+            portal_closure: {
+                text: "You attempt to close the portal, expending significant magical energy. The portal flickers and destabilizes.",
+                choices: [
+                    { text: "Push harder to close it completely", nextNode: "portal_sealed", effect: { magic: -40, exp: 50 } },
+                    { text: "Step back and let it collapse on its own", nextNode: "portal_collapse" },
+                    { text: "Try to reverse your spell", nextNode: "spell_reversal", effect: { magic: -20 } }
+                ]
+            }
+        };
+
+        let currentNode = 'start';
+        let characterStats = {
+            health: 100,
+            magic: 50,
+            gold: 0,
+            exp: 0
+        };
+        let inventory = [];
+        let storyPath = [];
+
+        function displayStory() {
+            const node = storyData[currentNode];
+            if (!node) {
+                console.error(`Node '${currentNode}' not found in story data.`);
+                document.getElementById('story-display').innerText = "Your journey continues... (New adventures coming soon!)";
+                document.getElementById('choices').innerHTML = '<button onclick="resetStory()">Start a New Adventure</button>';
+                return;
+            }
+            document.getElementById('story-display').innerText = node.text;
+
+            const choicesElement = document.getElementById('choices');
+            choicesElement.innerHTML = '';
+            node.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.innerText = choice.text;
+                button.onclick = () => makeChoice(choice);
+                choicesElement.appendChild(button);
+            });
+
+            updateStats();
+            updateInventory();
+            updateStoryTree();
+        }
+
+        function makeChoice(choice) {
+            if (choice.effect) {
+                Object.keys(choice.effect).forEach(stat => {
+                    characterStats[stat] += choice.effect[stat];
+                    characterStats[stat] = Math.max(0, characterStats[stat]); // Ensure stats don't go below 0
+                });
+            }
+            if (choice.item) {
+                inventory.push(choice.item);
+            }
+            storyPath.push({ from: currentNode, to: choice.nextNode, choice: choice.text });
+            currentNode = choice.nextNode;
+            displayStory();
+        }
+
+        function updateStats() {
+            Object.keys(characterStats).forEach(stat => {
+                document.getElementById(`${stat}-stat`).innerText = characterStats[stat];
+            });
+        }
+
+        function updateInventory() {
+            const inventoryList = document.getElementById('inventory-list');
+            inventoryList.innerHTML = '';
+            inventory.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                inventoryList.appendChild(li);
+            });
+        }
+
+        function updateStoryTree() {
+            const treeDisplay = document.getElementById('tree-display');
+            treeDisplay.innerHTML = '';
+            storyPath.forEach((step, index) => {
+                const node = document.createElement('div');
+                node.className = 'story-node';
+                node.innerText = `${index + 1}. ${step.choice}`;
+                treeDisplay.appendChild(node);
+            });
+        }
+
+        function resetStory() {
+            currentNode = 'start';
+            characterStats = { health: 100, magic: 50, gold: 0, exp: 0 };
+            inventory = [];
+            storyPath = [];
+            displayStory();
+        }
+
+        // Initialize the story
+        displayStory();
+    </script>
+
+</body>
+
+</html>
