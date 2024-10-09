@@ -214,7 +214,45 @@
 
     <script>
         const storyData = {
-            // Previous nodes remain unchanged
+            start: {
+                text: "Welcome to Enchanted Realms! You find yourself at the edge of a mystical forest. What do you do?",
+                choices: [
+                    { text: "Enter the deep woods", nextNode: "deep_woods" },
+                    { text: "Approach the forest spirits", nextNode: "forest_spirits" },
+                    { text: "Set up camp nearby", nextNode: "forest_camp" }
+                ]
+            }, deep_woods: {
+                text: "Following the whispers, you find yourself in the heart of the woods. The trees here are ancient, their trunks twisted into fascinating shapes. You come across a talking owl perched on a gnarled branch.",
+                choices: [
+                    { text: "Ask the owl for advice", nextNode: "owl_wisdom", effect: { exp: 20 } },
+                    { text: "Search for magical herbs", nextNode: "herb_gathering", effect: { magic: 15 } },
+                    { text: "Investigate a faint glow coming from a hollow tree", nextNode: "tree_hollow" }
+                ]
+            },
+            forest_spirits: {
+                text: "As you approach the glowing figures, they coalesce into ethereal forest spirits. They seem curious about your presence in their domain.",
+                choices: [
+                    { text: "Offer a token of friendship", nextNode: "spirit_alliance", effect: { gold: -10, magic: 25 } },
+                    { text: "Ask about the secrets of the forest", nextNode: "forest_secrets", effect: { exp: 30 } },
+                    { text: "Request their protection", nextNode: "spirit_guardian", effect: { health: 20 } }
+                ]
+            },
+            forest_camp: {
+                text: "You find a small clearing perfect for setting up camp. As night falls, the forest comes alive with magical sounds and lights.",
+                choices: [
+                    { text: "Tell stories around the campfire", nextNode: "campfire_tales", effect: { exp: 15 } },
+                    { text: "Perform a protection ritual", nextNode: "night_ward", effect: { magic: 20 } },
+                    { text: "Keep watch for nocturnal creatures", nextNode: "night_encounter" }
+                ]
+            },
+            owl_wisdom: {
+                text: "The owl speaks with a deep, resonant voice. It offers to answer three questions about the magical realms.",
+                choices: [
+                    { text: "Ask about the greatest treasure in the realm", nextNode: "treasure_quest" },
+                    { text: "Inquire about the most dangerous creature", nextNode: "beast_warning" },
+                    { text: "Question the nature of magic in this world", nextNode: "magic_insight", effect: { magic: 25, exp: 30 } }
+                ]
+            },
 
             herb_gathering: {
                 text: "You discover a patch of rare, glowing herbs. As you gather them, you feel their magical essence enhancing your powers.",
