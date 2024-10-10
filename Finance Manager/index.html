@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Finance Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --secondary: #A5B4FC;
+            --accent: #10B981;
+            --background: #F3F4F6;
+            --text: #1F2937;
+            --card-bg: #FFFFFF;
+            --danger: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            font-weight: 700;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card h2 i {
+            margin-right: 10px;
+        }
+
+        .stat {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: 10px;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        form {
+            display: grid;
+            gap: 15px;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--secondary);
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #transactionList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #transactionList li {
+            background-color: var(--background);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+
+        #transactionList li:hover {
+            transform: translateX(5px);
+        }
+
+        .income {
+            color: var(--accent);
+        }
+
+        .expense {
+            color: var(--danger);
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 0 10px;
+        }
+
+        .savings-goal {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 10px;
+            background-color: var(--secondary);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--accent);
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-chart-line"></i> Smart Finance Dashboard</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="card">
+                <h2><i class="fas fa-wallet"></i> Total Balance</h2>
+                <div class="stat" id="totalBalance">$0</div>
+            </div>
+            <div class="card">
+                <h2><i class="fas fa-arrow-up"></i> Income</h2>
+                <div class="stat income" id="totalIncome">$0</div>
+            </div>
+            <div class="card">
+                <h2><i class="fas fa-arrow-down"></i> Expenses</h2>
+                <div class="stat expense" id="totalExpenses">$0</div>
+            </div>
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Add Transaction</h2>
+                <form id="transactionForm">
+                    <input type="text" id="transactionName" placeholder="Transaction Name" required>
+                    <input type="number" id="transactionAmount" placeholder="Amount" step="0.01" required>
+                    <select id="transactionType">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                    <button type="submit">Add Transaction</button>
+                </form>
+            </div>
+            <div class="card">
+                <h2><i class="fas fa-chart-pie"></i> Expense Breakdown</h2>
+                <div class="chart-container">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h2><i class="fas fa-list"></i> Recent Transactions</h2>
+                <ul id="transactionList"></ul>
+            </div>
+            <div class="card">
+                <h2><i class="fas fa-piggy-bank"></i> Savings Goal</h2>
+                <input type="number" id="savingsGoal" placeholder="Enter your savings goal" step="100">
+                <button onclick="setSavingsGoal()">Set Goal</button>
+                <div class="savings-goal">
+                    <div class="progress-bar">
+                        <div class="progress" id="savingsProgress"></div>
+                    </div>
+                    <span id="savingsPercentage">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let savingsGoal = localStorage.getItem('savingsGoal') || 0;
+        let totalBalance = 0;
+        let totalIncome = 0;
+        let totalExpenses = 0;
+
+        const transactionForm = document.getElementById('transactionForm');
+        const transactionList = document.getElementById('transactionList');
+        const totalBalanceEl = document.getElementById('totalBalance');
+        const totalIncomeEl = document.getElementById('totalIncome');
+        const totalExpensesEl = document.getElementById('totalExpenses');
+        const savingsProgressEl = document.getElementById('savingsProgress');
+        const savingsPercentageEl = document.getElementById('savingsPercentage');
+
+        function updateStats() {
+            totalBalance = transactions.reduce((acc, transaction) => {
+                if (transaction.type === 'income') {
+                    return acc + transaction.amount;
+                } else {
+                    return acc - transaction.amount;
+                }
+            }, 0);
+
+            totalIncome = transactions
+                .filter(transaction => transaction.type === 'income')
+                .reduce((acc, transaction) => acc + transaction.amount, 0);
+
+            totalExpenses = transactions
+                .filter(transaction => transaction.type === 'expense')
+                .reduce((acc, transaction) => acc + transaction.amount, 0);
+
+            totalBalanceEl.textContent = `$${totalBalance.toFixed(2)}`;
+            totalIncomeEl.textContent = `$${totalIncome.toFixed(2)}`;
+            totalExpensesEl.textContent = `$${totalExpenses.toFixed(2)}`;
+
+            updateSavingsProgress();
+        }
+
+        function addTransaction(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('transactionName').value;
+            const amount = parseFloat(document.getElementById('transactionAmount').value);
+            const type = document.getElementById('transactionType').value;
+
+            transactions.push({ name, amount, type, id: Date.now() });
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+
+            updateStats();
+            updateTransactionList();
+            updateExpenseChart();
+
+            transactionForm.reset();
+        }
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(transaction => transaction.id !== id);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            updateStats();
+            updateTransactionList();
+            updateExpenseChart();
+        }
+
+        function updateTransactionList() {
+            transactionList.innerHTML = '';
+            transactions.slice(-5).reverse().forEach(transaction => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${transaction.name}</span>
+                    <span>
+                        <span class="${transaction.type}">$${transaction.amount.toFixed(2)}</span>
+                        <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </span>
+                `;
+                transactionList.appendChild(li);
+            });
+        }
+
+        function updateExpenseChart() {
+            const expenseData = {};
+            transactions.forEach(transaction => {
+                if (transaction.type === 'expense') {
+                    expenseData[transaction.name] = (expenseData[transaction.name] || 0) + transaction.amount;
+                }
+            });
+
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(expenseData),
+                    datasets: [{
+                        data: Object.values(expenseData),
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+        }
+
+        function setSavingsGoal() {
+            savingsGoal = parseFloat(document.getElementById('savingsGoal').value);
+            localStorage.setItem('savingsGoal', savingsGoal);
+            updateSavingsProgress();
+        }
+
+        function updateSavingsProgress() {
+            if (savingsGoal > 0) {
+                const progress = (totalBalance / savingsGoal) * 100;
+                savingsProgressEl.style.width = `${Math.min(progress, 100)}%`;
+                savingsPercentageEl.textContent = `${progress.toFixed(1)}%`;
+            }
+        }
+
+        transactionForm.addEventListener('submit', addTransaction);
+
+        updateStats();
+        updateTransactionList();
+        updateExpenseChart();
+        document.getElementById('savingsGoal').value = savingsGoal;
+        updateSavingsProgress();
+    </script>
+</body>
+
+</html>
