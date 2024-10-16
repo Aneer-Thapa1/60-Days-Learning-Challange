@@ -4,18 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Finance Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Advanced Personal Finance Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #6366F1;
-            --primary-dark: #4F46E5;
-            --secondary: #A5B4FC;
-            --accent: #10B981;
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --secondary: #10B981;
+            --accent: #F59E0B;
             --background: #F3F4F6;
-            --text: #1F2937;
             --card-bg: #FFFFFF;
+            --text: #1F2937;
+            --text-light: #6B7280;
             --danger: #EF4444;
         }
 
@@ -26,87 +28,85 @@
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--background);
             color: var(--text);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 20px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        h1,
-        h2 {
-            font-weight: 700;
+            line-height: 1.5;
         }
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
         .card {
             background-color: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
-        .card h2 {
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
             color: var(--primary);
-            margin-bottom: 15px;
             display: flex;
             align-items: center;
         }
 
-        .card h2 i {
-            margin-right: 10px;
+        h2 i {
+            margin-right: 0.5rem;
+            font-size: 1.4rem;
         }
 
         .stat {
-            font-size: 2.5em;
+            font-size: 2rem;
             font-weight: 700;
-            color: var(--accent);
-            margin-top: 10px;
+            color: var(--primary);
         }
 
-        .chart-container {
-            height: 300px;
-            margin-top: 20px;
+        .income {
+            color: var(--secondary);
         }
 
-        form {
-            display: grid;
-            gap: 15px;
+        .expense {
+            color: var(--danger);
         }
 
         input,
         select,
         button {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--secondary);
-            border-radius: 8px;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 16px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
         }
 
         button {
@@ -114,45 +114,34 @@
             color: white;
             border: none;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            font-weight: 600;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
         }
 
         button:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
+            background-color: var(--primary-light);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        #transactionList {
+        #transactionList,
+        #budgetList {
             list-style-type: none;
-            padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
-        #transactionList li {
-            background-color: var(--background);
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 8px;
+        #transactionList li,
+        #budgetList li {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: transform 0.2s ease;
+            padding: 0.75rem;
+            border-bottom: 1px solid #E5E7EB;
+            transition: background-color 0.3s ease;
         }
 
-        #transactionList li:hover {
-            transform: translateX(5px);
-        }
-
-        .income {
-            color: var(--accent);
-        }
-
-        .expense {
-            color: var(--danger);
+        #transactionList li:hover,
+        #budgetList li:hover {
+            background-color: #F9FAFB;
         }
 
         .delete-btn {
@@ -160,23 +149,33 @@
             border: none;
             color: var(--danger);
             cursor: pointer;
-            font-size: 1.2em;
-            padding: 0 10px;
+            font-size: 1.2rem;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        .chart-container {
+            height: 300px;
+            width: 100%;
         }
 
         .savings-goal {
             display: flex;
             align-items: center;
-            margin-top: 15px;
+            margin-top: 1rem;
         }
 
         .progress-bar {
             flex-grow: 1;
             height: 10px;
-            background-color: var(--secondary);
+            background-color: #E5E7EB;
             border-radius: 5px;
             overflow: hidden;
-            margin-right: 10px;
+            margin-right: 1rem;
         }
 
         .progress {
@@ -185,94 +184,179 @@
             transition: width 0.5s ease;
         }
 
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
+        #greeting {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 1rem;
+        }
+
+        .financial-health {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .card-sm {
+            grid-column: span 1;
+        }
+
+        .card-md {
+            grid-column: span 2;
+        }
+
+        .card-lg {
+            grid-column: span 4;
         }
     </style>
 </head>
 
 <body>
     <header>
-        <div class="container">
-            <h1><i class="fas fa-chart-line"></i> Smart Finance Dashboard</h1>
-        </div>
+        <h1>Advanced Personal Finance Dashboard</h1>
+        <div id="greeting"></div>
     </header>
-
-    <div class="container">
-        <div class="dashboard">
-            <div class="card">
-                <h2><i class="fas fa-wallet"></i> Total Balance</h2>
-                <div class="stat" id="totalBalance">$0</div>
-            </div>
-            <div class="card">
-                <h2><i class="fas fa-arrow-up"></i> Income</h2>
-                <div class="stat income" id="totalIncome">$0</div>
-            </div>
-            <div class="card">
-                <h2><i class="fas fa-arrow-down"></i> Expenses</h2>
-                <div class="stat expense" id="totalExpenses">$0</div>
-            </div>
-            <div class="card">
-                <h2><i class="fas fa-plus-circle"></i> Add Transaction</h2>
-                <form id="transactionForm">
-                    <input type="text" id="transactionName" placeholder="Transaction Name" required>
-                    <input type="number" id="transactionAmount" placeholder="Amount" step="0.01" required>
-                    <select id="transactionType">
-                        <option value="income">Income</option>
-                        <option value="expense">Expense</option>
-                    </select>
-                    <button type="submit">Add Transaction</button>
-                </form>
-            </div>
-            <div class="card">
-                <h2><i class="fas fa-chart-pie"></i> Expense Breakdown</h2>
-                <div class="chart-container">
-                    <canvas id="expenseChart"></canvas>
+    <div class="dashboard" id="dashboard">
+        <div class="card card-lg">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar"></div>
+                <div>
+                    <h2 id="userName">Welcome back!</h2>
+                    <p id="lastLogin">Last login: </p>
                 </div>
             </div>
-            <div class="card">
-                <h2><i class="fas fa-list"></i> Recent Transactions</h2>
-                <ul id="transactionList"></ul>
+            <div class="financial-health">
+                <h2><i class="fas fa-heartbeat"></i> Financial Health</h2>
+                <p id="financialHealthStatus">Calculating your financial health...</p>
             </div>
-            <div class="card">
-                <h2><i class="fas fa-piggy-bank"></i> Savings Goal</h2>
-                <input type="number" id="savingsGoal" placeholder="Enter your savings goal" step="100">
-                <button onclick="setSavingsGoal()">Set Goal</button>
-                <div class="savings-goal">
-                    <div class="progress-bar">
-                        <div class="progress" id="savingsProgress"></div>
-                    </div>
-                    <span id="savingsPercentage">0%</span>
+        </div>
+        <div class="card card-sm">
+            <h2><i class="fas fa-wallet"></i> Total Balance</h2>
+            <div class="stat" id="totalBalance">$0</div>
+        </div>
+        <div class="card card-sm">
+            <h2><i class="fas fa-arrow-up"></i> Income</h2>
+            <div class="stat income" id="totalIncome">$0</div>
+        </div>
+        <div class="card card-sm">
+            <h2><i class="fas fa-arrow-down"></i> Expenses</h2>
+            <div class="stat expense" id="totalExpenses">$0</div>
+        </div>
+        <div class="card card-sm">
+            <h2><i class="fas fa-piggy-bank"></i> Savings</h2>
+            <div class="stat" id="totalSavings">$0</div>
+        </div>
+        <div class="card card-md">
+            <h2><i class="fas fa-plus-circle"></i> Add Transaction</h2>
+            <form id="transactionForm">
+                <input type="text" id="transactionName" placeholder="Transaction Name" required>
+                <input type="number" id="transactionAmount" placeholder="Amount" step="0.01" required>
+                <select id="transactionType">
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                    <option value="savings">Savings</option>
+                </select>
+                <button type="submit">Add Transaction</button>
+            </form>
+        </div>
+        <div class="card card-md">
+            <h2><i class="fas fa-chart-pie"></i> Expense Breakdown</h2>
+            <div class="chart-container">
+                <canvas id="expenseChart"></canvas>
+            </div>
+        </div>
+        <div class="card card-md">
+            <h2><i class="fas fa-list"></i> Recent Transactions</h2>
+            <ul id="transactionList"></ul>
+        </div>
+        <div class="card card-md">
+            <h2><i class="fas fa-bullseye"></i> Budget Tracker</h2>
+            <ul id="budgetList"></ul>
+            <form id="budgetForm">
+                <input type="text" id="budgetCategory" placeholder="Budget Category" required>
+                <input type="number" id="budgetAmount" placeholder="Budget Amount" step="0.01" required>
+                <button type="submit">Set Budget</button>
+            </form>
+        </div>
+        <div class="card card-md">
+            <h2><i class="fas fa-chart-line"></i> Savings Goal</h2>
+            <input type="number" id="savingsGoal" placeholder="Enter your savings goal" step="100">
+            <button onclick="setSavingsGoal()">Set Goal</button>
+            <div class="savings-goal">
+                <div class="progress-bar">
+                    <div class="progress" id="savingsProgress"></div>
                 </div>
+                <span id="savingsPercentage">0%</span>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        let userName = localStorage.getItem('userName');
+        if (!userName) {
+            userName = prompt("Welcome! Please enter your name:");
+            localStorage.setItem('userName', userName);
+        }
+
+        function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return "Good morning";
+            if (hour < 18) return "Good afternoon";
+            return "Good evening";
+        }
+
+        document.getElementById('greeting').textContent = `${getGreeting()}, ${userName}!`;
+        document.getElementById('userName').textContent = `Welcome back, ${userName}!`;
+        document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
+
+        let lastLogin = localStorage.getItem('lastLogin') || new Date().toLocaleString();
+        document.getElementById('lastLogin').textContent = `Last login: ${lastLogin}`;
+        localStorage.setItem('lastLogin', new Date().toLocaleString());
+
         let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
         let savingsGoal = localStorage.getItem('savingsGoal') || 0;
+        let budgets = JSON.parse(localStorage.getItem('budgets')) || {};
+
         let totalBalance = 0;
         let totalIncome = 0;
         let totalExpenses = 0;
+        let totalSavings = 0;
 
         const transactionForm = document.getElementById('transactionForm');
         const transactionList = document.getElementById('transactionList');
+        const budgetForm = document.getElementById('budgetForm');
+        const budgetList = document.getElementById('budgetList');
         const totalBalanceEl = document.getElementById('totalBalance');
         const totalIncomeEl = document.getElementById('totalIncome');
         const totalExpensesEl = document.getElementById('totalExpenses');
+        const totalSavingsEl = document.getElementById('totalSavings');
         const savingsProgressEl = document.getElementById('savingsProgress');
         const savingsPercentageEl = document.getElementById('savingsPercentage');
+        const financialHealthEl = document.getElementById('financialHealthStatus');
 
         function updateStats() {
             totalBalance = transactions.reduce((acc, transaction) => {
-                if (transaction.type === 'income') {
-                    return acc + transaction.amount;
-                } else {
-                    return acc - transaction.amount;
-                }
+                if (transaction.type === 'income') return acc + transaction.amount;
+                if (transaction.type === 'expense') return acc - transaction.amount;
+                return acc;
             }, 0);
 
             totalIncome = transactions
@@ -283,16 +367,21 @@
                 .filter(transaction => transaction.type === 'expense')
                 .reduce((acc, transaction) => acc + transaction.amount, 0);
 
+            totalSavings = transactions
+                .filter(transaction => transaction.type === 'savings')
+                .reduce((acc, transaction) => acc + transaction.amount, 0);
+
             totalBalanceEl.textContent = `$${totalBalance.toFixed(2)}`;
             totalIncomeEl.textContent = `$${totalIncome.toFixed(2)}`;
             totalExpensesEl.textContent = `$${totalExpenses.toFixed(2)}`;
+            totalSavingsEl.textContent = `$${totalSavings.toFixed(2)}`;
 
             updateSavingsProgress();
+            updateFinancialHealth();
         }
 
         function addTransaction(e) {
             e.preventDefault();
-
             const name = document.getElementById('transactionName').value;
             const amount = parseFloat(document.getElementById('transactionAmount').value);
             const type = document.getElementById('transactionType').value;
@@ -303,7 +392,7 @@
             updateStats();
             updateTransactionList();
             updateExpenseChart();
-
+            updateBudgetList();
             transactionForm.reset();
         }
 
@@ -313,6 +402,7 @@
             updateStats();
             updateTransactionList();
             updateExpenseChart();
+            updateBudgetList();
         }
 
         function updateTransactionList() {
@@ -323,9 +413,7 @@
                     <span>${transaction.name}</span>
                     <span>
                         <span class="${transaction.type}">$${transaction.amount.toFixed(2)}</span>
-                        <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">×</button>
                     </span>
                 `;
                 transactionList.appendChild(li);
@@ -334,11 +422,11 @@
 
         function updateExpenseChart() {
             const expenseData = {};
-            transactions.forEach(transaction => {
-                if (transaction.type === 'expense') {
+            transactions
+                .filter(transaction => transaction.type === 'expense')
+                .forEach(transaction => {
                     expenseData[transaction.name] = (expenseData[transaction.name] || 0) + transaction.amount;
-                }
-            });
+                });
 
             const ctx = document.getElementById('expenseChart').getContext('2d');
             new Chart(ctx, {
@@ -348,7 +436,7 @@
                     datasets: [{
                         data: Object.values(expenseData),
                         backgroundColor: [
-                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                            '#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'
                         ]
                     }]
                 },
@@ -372,19 +460,79 @@
 
         function updateSavingsProgress() {
             if (savingsGoal > 0) {
-                const progress = (totalBalance / savingsGoal) * 100;
+                const progress = (totalSavings / savingsGoal) * 100;
                 savingsProgressEl.style.width = `${Math.min(progress, 100)}%`;
                 savingsPercentageEl.textContent = `${progress.toFixed(1)}%`;
             }
         }
 
-        transactionForm.addEventListener('submit', addTransaction);
+        function updateFinancialHealth() {
+            const savingsRate = totalIncome > 0 ? (totalSavings / totalIncome) * 100 : 0;
+            const expenseRate = totalIncome > 0 ? (totalExpenses / totalIncome) * 100 : 0;
 
+            let healthStatus = '';
+            if (savingsRate >= 20 && expenseRate <= 50) {
+                healthStatus = 'Excellent! You\'re saving well and managing expenses effectively.';
+            } else if (savingsRate >= 10 && expenseRate <= 70) {
+                healthStatus = 'Good. Consider increasing your savings if possible.';
+            } else if (savingsRate > 0) {
+                healthStatus = 'Fair. Try to increase your savings and reduce expenses.';
+            } else {
+                healthStatus = 'Needs improvement. Focus on reducing expenses and start saving.';
+            }
+
+            financialHealthEl.textContent = healthStatus;
+        }
+
+        function addBudget(e) {
+            e.preventDefault();
+            const category = document.getElementById('budgetCategory').value;
+            const amount = parseFloat(document.getElementById('budgetAmount').value);
+
+            budgets[category] = amount;
+            localStorage.setItem('budgets', JSON.stringify(budgets));
+
+            updateBudgetList();
+            budgetForm.reset();
+        }
+
+        function updateBudgetList() {
+            budgetList.innerHTML = '';
+            for (const [category, budgetAmount] of Object.entries(budgets)) {
+                const spent = transactions
+                    .filter(t => t.type === 'expense' && t.name.toLowerCase() === category.toLowerCase())
+                    .reduce((sum, t) => sum + t.amount, 0);
+
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${category}</span>
+                    <span>
+                        $${spent.toFixed(2)} / $${budgetAmount.toFixed(2)}
+                        <button class="delete-btn" onclick="deleteBudget('${category}')">×</button>
+                    </span>
+                `;
+                budgetList.appendChild(li);
+            }
+        }
+
+        function deleteBudget(category) {
+            delete budgets[category];
+            localStorage.setItem('budgets', JSON.stringify(budgets));
+            updateBudgetList();
+        }
+
+        // Initial setup
+        transactionForm.addEventListener('submit', addTransaction);
+        budgetForm.addEventListener('submit', addBudget);
         updateStats();
         updateTransactionList();
         updateExpenseChart();
+        updateBudgetList();
         document.getElementById('savingsGoal').value = savingsGoal;
         updateSavingsProgress();
+
+        // Redraw chart when window is resized
+        window.addEventListener('resize', updateExpenseChart);
     </script>
 </body>
 
