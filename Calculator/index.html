@@ -4,243 +4,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Calculator</title>
+    <title>Modern Snake Game</title>
     <style>
         body {
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-color: #1a1a2e;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
         }
 
-        .calculator {
-            background-color: #333;
+        #gameContainer {
+            position: relative;
+            text-align: center;
+        }
+
+        #gameCanvas {
             border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
         }
 
-        #display,
-        #naturalInput {
-            width: 100%;
-            margin-bottom: 10px;
-            font-size: 24px;
-            text-align: right;
+        #scoreBoard {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
             padding: 10px;
-            border: none;
             border-radius: 5px;
-            box-sizing: border-box;
         }
 
-        #display {
-            background-color: #4CAF50;
-            color: white;
-            height: 60px;
+        #gameTitle {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ffff;
         }
 
-        #naturalInput {
-            background-color: #2196F3;
-            color: white;
-            height: 40px;
+        #gameOverScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        #restartButton {
+            background-color: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
             font-size: 16px;
-        }
-
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        button {
-            width: 100%;
-            height: 60px;
-            font-size: 20px;
-            border: none;
-            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.1s;
-        }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        .number,
-        .decimal {
-            background-color: #555;
-            color: white;
-        }
-
-        .operator {
-            background-color: #FF9800;
-            color: white;
-        }
-
-        .equals {
-            background-color: #2196F3;
-            color: white;
-        }
-
-        .clear,
-        .backspace {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .function {
-            background-color: #9C27B0;
-            color: white;
+            border-radius: 5px;
+            margin-top: 10px;
         }
     </style>
 </head>
 
 <body>
-    <div class="calculator">
-        <input type="text" id="naturalInput" placeholder="Type your calculation (e.g. '2 plus 3 times 4')">
-        <input type="text" id="display" readonly>
-        <div class="buttons">
-            <button class="clear" onclick="clearDisplay()">C</button>
-            <button class="backspace" onclick="backspace()">⌫</button>
-            <button class="function" onclick="appendToDisplay('√(')">√</button>
-            <button class="function" onclick="appendToDisplay('^')">^</button>
-            <button class="number" onclick="appendToDisplay('7')">7</button>
-            <button class="number" onclick="appendToDisplay('8')">8</button>
-            <button class="number" onclick="appendToDisplay('9')">9</button>
-            <button class="operator" onclick="appendToDisplay('/')">/</button>
-            <button class="number" onclick="appendToDisplay('4')">4</button>
-            <button class="number" onclick="appendToDisplay('5')">5</button>
-            <button class="number" onclick="appendToDisplay('6')">6</button>
-            <button class="operator" onclick="appendToDisplay('*')">*</button>
-            <button class="number" onclick="appendToDisplay('1')">1</button>
-            <button class="number" onclick="appendToDisplay('2')">2</button>
-            <button class="number" onclick="appendToDisplay('3')">3</button>
-            <button class="operator" onclick="appendToDisplay('-')">-</button>
-            <button class="number" onclick="appendToDisplay('0')">0</button>
-            <button class="decimal" onclick="appendToDisplay('.')">.</button>
-            <button class="function" onclick="appendToDisplay('log(')">log</button>
-            <button class="operator" onclick="appendToDisplay('+')">+</button>
-            <button class="function" onclick="appendToDisplay('sin(')">sin</button>
-            <button class="function" onclick="appendToDisplay('cos(')">cos</button>
-            <button class="function" onclick="appendToDisplay('tan(')">tan</button>
-            <button class="equals" onclick="calculate()">=</button>
+    <div id="gameContainer">
+        <h1 id="gameTitle">Modern Snake</h1>
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div id="scoreBoard">
+            <div>Score: <span id="currentScore">0</span></div>
+            <div>Highest Score: <span id="highestScore">0</span></div>
+        </div>
+        <div id="gameOverScreen">
+            <h2>Game Over</h2>
+            <p>Your Score: <span id="finalScore"></span></p>
+            <p>Highest Score: <span id="finalHighestScore"></span></p>
+            <button id="restartButton">Restart</button>
         </div>
     </div>
 
     <script>
-        const display = document.getElementById('display');
-        const naturalInput = document.getElementById('naturalInput');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const currentScoreElement = document.getElementById('currentScore');
+        const highestScoreElement = document.getElementById('highestScore');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScore = document.getElementById('finalScore');
+        const finalHighestScore = document.getElementById('finalHighestScore');
+        const restartButton = document.getElementById('restartButton');
 
-        // Web Audio API setup
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const gridSize = 30;
+        const tileCount = canvas.width / gridSize;
+        let snake = [{ x: 10, y: 10 }];
+        let food = { x: 15, y: 15 };
+        let dx = 0;
+        let dy = 0;
+        let score = 0;
+        let highestScore = 0;
+        let gameActive = true;
 
-        function playSound(frequency, duration) {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+        function drawGame() {
+            if (!gameActive) return;
 
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
-
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + duration);
+            clearCanvas();
+            moveSnake();
+            drawFood();
+            drawSnake();
+            checkCollision();
+            updateScore();
         }
 
-        function playClickSound() {
-            playSound(800, 0.1);
+        function clearCanvas() {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        function playCalculationSound() {
-            playSound(1200, 0.15);
-        }
-
-        function appendToDisplay(value) {
-            display.value += value;
-            playClickSound();
-        }
-
-        function clearDisplay() {
-            display.value = '';
-            naturalInput.value = '';
-            playClickSound();
-        }
-
-        function backspace() {
-            display.value = display.value.slice(0, -1);
-            playClickSound();
-        }
-
-        function balanceParentheses(expression) {
-            let openCount = 0;
-            for (let char of expression) {
-                if (char === '(') openCount++;
-                if (char === ')') openCount--;
-            }
-            return expression + ')'.repeat(Math.max(0, openCount));
-        }
-
-        function degreesToRadians(degrees) {
-            return degrees * (Math.PI / 180);
-        }
-
-        function calculate() {
-            try {
-                let expression = display.value;
-                expression = balanceParentheses(expression);
-                expression = expression.replace(/√/g, 'Math.sqrt');
-                expression = expression.replace(/\^/g, '**');
-                expression = expression.replace(/log\(/g, 'Math.log10(');
-                expression = expression.replace(/sin\((\d+(\.\d+)?)\)/g, (match, p1) => `Math.sin(${degreesToRadians(parseFloat(p1))})`);
-                expression = expression.replace(/cos\((\d+(\.\d+)?)\)/g, (match, p1) => `Math.cos(${degreesToRadians(parseFloat(p1))})`);
-                expression = expression.replace(/tan\((\d+(\.\d+)?)\)/g, (match, p1) => `Math.tan(${degreesToRadians(parseFloat(p1))})`);
-                let result = Function('return ' + expression)();
-                display.value = Number.isFinite(result) ? Number(result.toPrecision(10)) : 'Error';
-                playCalculationSound();
-            } catch (error) {
-                display.value = 'Error';
-                playClickSound();
+        function moveSnake() {
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+            snake.unshift(head);
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                generateFood();
+            } else {
+                snake.pop();
             }
         }
 
-        naturalInput.addEventListener('keyup', function (event) {
-            if (event.key === 'Enter') {
-                const input = naturalInput.value.toLowerCase();
-                let expression = input
-                    .replace(/(\d+)\s*squared/g, '($1 ** 2)')
-                    .replace(/(\d+)\s*cubed/g, '($1 ** 3)')
-                    .replace(/square root of/g, '√(')
-                    .replace(/sqrt/g, '√(')
-                    .replace(/\bpower\b/g, '^')
-                    .replace(/\bto the\b/g, '^')
-                    .replace(/\btimes\b/g, '*')
-                    .replace(/\bdivided by\b/g, '/')
-                    .replace(/\bplus\b/g, '+')
-                    .replace(/\bminus\b/g, '-')
-                    .replace(/\blog of\b/g, 'log(')
-                    .replace(/\bsin of\b/g, 'sin(')
-                    .replace(/\bcos of\b/g, 'cos(')
-                    .replace(/\btan of\b/g, 'tan(')
-                    .replace(/\bdegrees?\b/g, ')')
-                    .replace(/\band\b/g, '+')
-                    .replace(/(\d+)\s*(\+|\-|\*|\/)\s*(\d+)/g, '$1 $2 $3')
-                    .replace(/pi/g, 'Math.PI')
-                    .replace(/e/g, 'Math.E');
+        function drawFood() {
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.arc((food.x + 0.5) * gridSize, (food.y + 0.5) * gridSize, gridSize / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
-                display.value = expression;
-                calculate();
+        function drawSnake() {
+            snake.forEach((segment, index) => {
+                const gradient = ctx.createLinearGradient(
+                    segment.x * gridSize,
+                    segment.y * gridSize,
+                    (segment.x + 1) * gridSize,
+                    (segment.y + 1) * gridSize
+                );
+                gradient.addColorStop(0, '#00ff00');
+                gradient.addColorStop(1, '#008000');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+
+                if (index === 0) {
+                    // Draw eyes
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc((segment.x + 0.3) * gridSize, (segment.y + 0.3) * gridSize, 3, 0, Math.PI * 2);
+                    ctx.arc((segment.x + 0.7) * gridSize, (segment.y + 0.3) * gridSize, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
+        function generateFood() {
+            food.x = Math.floor(Math.random() * tileCount);
+            food.y = Math.floor(Math.random() * tileCount);
+        }
+
+        function checkCollision() {
+            const head = snake[0];
+            if (
+                head.x < 0 ||
+                head.x >= tileCount ||
+                head.y < 0 ||
+                head.y >= tileCount ||
+                snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)
+            ) {
+                gameOver();
+            }
+        }
+
+        function updateScore() {
+            currentScoreElement.textContent = score;
+            if (score > highestScore) {
+                highestScore = score;
+                highestScoreElement.textContent = highestScore;
+            }
+        }
+
+        function gameOver() {
+            gameActive = false;
+            finalScore.textContent = score;
+            finalHighestScore.textContent = highestScore;
+            gameOverScreen.style.display = 'block';
+        }
+
+        function resetGame() {
+            snake = [{ x: 10, y: 10 }];
+            food = { x: 15, y: 15 };
+            dx = 0;
+            dy = 0;
+            score = 0;
+            gameActive = true;
+            gameOverScreen.style.display = 'none';
+            updateScore();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    if (dy === 0) { dx = 0; dy = -1; }
+                    break;
+                case 'ArrowDown':
+                    if (dy === 0) { dx = 0; dy = 1; }
+                    break;
+                case 'ArrowLeft':
+                    if (dx === 0) { dx = -1; dy = 0; }
+                    break;
+                case 'ArrowRight':
+                    if (dx === 0) { dx = 1; dy = 0; }
+                    break;
             }
         });
 
-        // Add click sound to all buttons
-        document.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', playClickSound);
+        restartButton.addEventListener('click', () => {
+            resetGame();
+            gameLoop();
         });
+
+        function gameLoop() {
+            drawGame();
+            if (gameActive) {
+                setTimeout(() => requestAnimationFrame(gameLoop), 100);
+            }
+        }
+
+        resetGame();
+        gameLoop();
     </script>
 </body>
 

@@ -4,11 +4,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Enhanced Two-Player Space Shooter</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            border: 2px solid #333;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        #gameOverScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        #restartButton {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
+    <canvas id="gameCanvas" width="1200" height="800"></canvas>
+    <div id="gameOverScreen">
+        <h2 id="winnerText"></h2>
+        <button id="restartButton">Restart</button>
+    </div>
 
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const winnerText = document.getElementById('winnerText');
+        const restartButton = document.getElementById('restartButton');
+
+        // Stars background
+        const stars = Array.from({ length: 200 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2,
+            speed: Math.random() * 0.5 + 0.1
+        }));
+
+        // Game objects
+        const player1 = {
+            x: 100,
+            y: canvas.height / 2,
+            width: 60,
+            height: 40,
+            color: '#ff0000',
+            speed: 5,
+            bullets: []
+        };
+
+        const player2 = {
+            x: canvas.width - 160,
+            y: canvas.height / 2,
+            width: 60,
+            height: 40,
+            color: '#0000ff',
+            speed: 5,
+            bullets: []
+        };
+
+        let gameActive = true;
+
+        // Key states
+        const keys = {};
+
+        // Event listeners
+        document.addEventListener('keydown', (e) => keys[e.code] = true);
+        document.addEventListener('keyup', (e) => keys[e.code] = false);
+        restartButton.addEventListener('click', restartGame);
+
+        function gameLoop() {
+            if (gameActive) {
+                update();
+                draw();
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function update() {
+            updateStars();
+            updatePlayers();
+            updateBullets();
+        }
+
+        function updateStars() {
+            stars.forEach(star => {
+                star.x -= star.speed;
+                if (star.x < 0) {
+                    star.x = canvas.width;
+                    star.y = Math.random() * canvas.height;
+                }
+            });
+        }
+
+        function updatePlayers() {
+            // Player 1 movement
+            if (keys['KeyW'] && player1.y > 0) player1.y -= player1.speed;
+            if (keys['KeyS'] && player1.y < canvas.height - player1.height) player1.y += player1.speed;
+            if (keys['KeyA'] && player1.x > 0) player1.x -= player1.speed;
+            if (keys['KeyD'] && player1.x < canvas.width / 2 - player1.width) player1.x += player1.speed;
+
+            // Player 2 movement
+            if (keys['ArrowUp'] && player2.y > 0) player2.y -= player2.speed;
+            if (keys['ArrowDown'] && player2.y < canvas.height - player2.height) player2.y += player2.speed;
+            if (keys['ArrowLeft'] && player2.x > canvas.width / 2) player2.x -= player2.speed;
+            if (keys['ArrowRight'] && player2.x < canvas.width - player2.width) player2.x += player2.speed;
+
+            // Shooting
+            if (keys['Space'] && player1.bullets.length < 5) {
+                player1.bullets.push({ x: player1.x + player1.width, y: player1.y + player1.height / 2, speed: 8 });
+            }
+            if (keys['Enter'] && player2.bullets.length < 5) {
+                player2.bullets.push({ x: player2.x, y: player2.y + player2.height / 2, speed: -8 });
+            }
+        }
+
+        function updateBullets() {
+            player1.bullets = player1.bullets.filter(bullet => {
+                bullet.x += bullet.speed;
+                return bullet.x < canvas.width && !checkCollision(bullet, player2);
+            });
+
+            player2.bullets = player2.bullets.filter(bullet => {
+                bullet.x += bullet.speed;
+                return bullet.x > 0 && !checkCollision(bullet, player1);
+            });
+        }
+
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw stars
+            drawStars();
+
+            // Draw players
+            drawSpaceship(player1);
+            drawSpaceship(player2);
+
+            // Draw bullets
+            drawBullets();
+        }
+
+        function drawStars() {
+            ctx.fillStyle = '#fff';
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function drawSpaceship(player) {
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y + player.height / 2);
+            ctx.lineTo(player.x + player.width, player.y);
+            ctx.lineTo(player.x + player.width, player.y + player.height);
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw cockpit
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(player.x + player.width * 0.7, player.y + player.height / 2, player.height * 0.2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawBullets() {
+            ctx.fillStyle = '#ff0';
+            player1.bullets.forEach(bullet => {
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            player2.bullets.forEach(bullet => {
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function checkCollision(bullet, player) {
+            if (
+                bullet.x > player.x &&
+                bullet.x < player.x + player.width &&
+                bullet.y > player.y &&
+                bullet.y < player.y + player.height
+            ) {
+                gameOver(player === player1 ? 'Player 2' : 'Player 1');
+                return true;
+            }
+            return false;
+        }
+
+        function gameOver(winner) {
+            gameActive = false;
+            winnerText.textContent = `${winner} wins!`;
+            gameOverScreen.style.display = 'block';
+        }
+
+        function restartGame() {
+            player1.x = 100;
+            player1.y = canvas.height / 2;
+            player2.x = canvas.width - 160;
+            player2.y = canvas.height / 2;
+            player1.bullets = [];
+            player2.bullets = [];
+            gameActive = true;
+            gameOverScreen.style.display = 'none';
+            gameLoop();
+        }
+
+        gameLoop();
+    </script>
 </body>
 
 </html>
